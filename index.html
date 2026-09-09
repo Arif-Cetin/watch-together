@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Watch Together - VIP Cinema</title>
+  <title>Watch Together - VIP Stage</title>
   
-  <!-- PeerJS & İkonlar -->
+  <!-- KÜTÜPHANELER -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,14 +16,16 @@
 </head>
 <body>
 
-  <!-- Giriş / Şifre Ekranı -->
+  <!-- ========================================== -->
+  <!-- BÖLÜM 1: GİRİŞ EKRANI (AUTH OVERLAY)       -->
+  <!-- ========================================== -->
   <div class="auth-overlay" id="authOverlay">
     <div class="auth-card">
       <div class="house-icon-wrapper">
         <i class="fa-solid fa-house main-icon"></i>
       </div>
       <h2>Bizim Odamız</h2>
-      <p>Aleyna & Kaptan için özel şifrelenmiş VIP sinema odası.</p>
+      <p>Aleyna & Kaptan için özel tasarlanmış VIP Discord Sineması.</p>
       
       <div class="auth-field">
         <label>Kullanıcı Adın</label>
@@ -40,20 +42,38 @@
     </div>
   </div>
 
-  <!-- Ana Sinema Sahnesi -->
+  <!-- ========================================== -->
+  <!-- BÖLÜM 2: SOL DISCORD SUNUCU ÇUBUĞU         -->
+  <!-- ========================================== -->
+  <div class="discord-guild-rail">
+    <div class="guild-icon active" title="Bizim Sinemamız">
+      <i class="fa-solid fa-film"></i>
+    </div>
+    <div class="guild-separator"></div>
+    <div class="guild-icon" title="VIP Alanı">
+      <i class="fa-solid fa-heart" style="color: var(--neon-purple-bright);"></i>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- BÖLÜM 3: ANA SİNEMA SAHNESİ                -->
+  <!-- ========================================== -->
   <div class="main-stage">
     
-    <!-- Üst Başlık & Kontrol Çubuğu -->
+    <!-- ÜST BAŞLIK & KONTROLLER -->
     <div class="top-header">
       <div class="room-title">
         <div class="mini-logo">
-          <i class="fa-solid fa-sparkles"></i>
+          <i class="fa-solid fa-tv"></i>
         </div>
-        <span>Watch Together <span class="room-vip-badge">VIP</span></span>
+        <div class="title-details">
+          <span># sinema-odası <span class="room-vip-badge">VIP</span></span>
+          <span class="stage-subtext" id="stageStatusText">Beklemede</span>
+        </div>
       </div>
 
       <div class="header-right">
-        <!-- Katılımcı Rozeti & Kullanıcı Başına Ses Slider'ı -->
+        <!-- Katılımcı Rozeti & Ses Ayarı -->
         <div class="status-badge" id="statusBadge" title="Katılımcılar ve Ses Seviyeleri">
           <div class="status-indicator" id="statusDot"></div>
           <span id="statusText">Oda: 1</span>
@@ -67,7 +87,7 @@
           </div>
         </div>
 
-        <!-- Hızlı Tepkiler / Emoji Menüsü -->
+        <!-- Hızlı Tepki Emojileri -->
         <div class="reaction-wrapper">
           <button class="header-icon-btn" id="btnReactionTrigger" title="Tepki Gönder">
             <i class="fa-solid fa-heart" style="color: var(--neon-purple-bright);"></i>
@@ -81,24 +101,27 @@
           </div>
         </div>
 
-        <!-- Sohbet Butonu -->
-        <button class="header-icon-btn mobile-toggle" id="btnToggleChat" title="Sohbeti Aç/Kapat">
-          <i class="fa-solid fa-comments"></i>
-        </button>
+        <!-- Sohbet Butonu & Kırmızı Bildirim Noktası -->
+        <div class="chat-btn-wrapper">
+          <button class="header-icon-btn" id="btnToggleChat" title="Sohbeti Aç/Kapat">
+            <i class="fa-solid fa-comments"></i>
+          </button>
+          <span class="chat-unread-badge" id="chatUnreadDot"></span>
+        </div>
       </div>
     </div>
 
-    <!-- Yayın Sahnesi -->
-    <div class="screen-area" id="screenArea">
+    <!-- YAYIN VE KAMERA ALANI -->
+    <div class="stage-viewport" id="stageViewport">
       
-      <!-- Ekran Yayını Ses Ayarı (%0 - %200 Boost) -->
+      <!-- Ekran Ses Slider'ı (%0 - %200) -->
       <div class="screen-volume-bar" id="screenVolumeControl" style="display: none;">
         <i class="fa-solid fa-volume-high" style="color: var(--neon-green-bright); font-size: 13px;"></i>
         <input type="range" id="screenVolSlider" min="0" max="2" step="0.05" value="1" />
         <span class="screen-vol-val" id="screenVolText">%100</span>
       </div>
 
-      <!-- Tarayıcı Sesi Otomatik Engellerse Açma Tuşu -->
+      <!-- Tarayıcı Ses Engeli Butonu -->
       <button class="unmute-banner" id="btnUnmute">
         <i class="fa-solid fa-volume-xmark"></i> Sesi Açmak İçin Dokunun
       </button>
@@ -108,59 +131,64 @@
         <i class="fa-solid fa-expand"></i>
       </button>
 
-      <!-- Yüzen Neon Emojiler Katmanı -->
+      <!-- Uçuşan Emojiler Katmanı -->
       <div class="floating-reactions-layer" id="reactionsLayer"></div>
+
+      <!-- Ekran Paylaşımı -->
+      <div class="screen-box" id="screenBox" style="display: none;">
+        <video id="sharedVideo" autoplay playsinline></video>
+      </div>
 
       <!-- Bekleme Sahnesi -->
       <div class="screen-placeholder" id="placeholder">
         <div class="placeholder-glow">
-          <i class="fa-solid fa-house-chimney-heart"></i>
+          <i class="fa-solid fa-clapperboard"></i>
         </div>
         <h3>Bizim Sinemamız</h3>
-        <p>Alttaki butonla ekranını paylaştığında sinema burada başlayacak.</p>
+        <p>Alttaki butonla kameranı açabilir ya da bilgisayarından ekranını paylaşabilirsin.</p>
       </div>
 
-      <video id="sharedVideo" autoplay playsinline style="display: none;"></video>
-
-      <!-- Kamera Izgarası -->
-      <div class="camera-grid" id="cameraGrid"></div>
+      <!-- Kameralar Sahnesi -->
+      <div class="camera-stage grid-mode" id="cameraStage"></div>
     </div>
 
-    <!-- Alt Buton Dock'u -->
+    <!-- ALT KONTROL DOCK'U -->
     <div class="call-dock">
-      <button class="dock-btn" id="btnMic" title="Mikrofon Aç/Kapat"><i class="fa-solid fa-microphone-slash"></i></button>
-      <button class="dock-btn" id="btnCam" title="Kamera Aç/Kapat"><i class="fa-solid fa-video-slash"></i></button>
-      <button class="dock-btn" id="btnShareScreen" title="Ekran Paylaşımı Başlat"><i class="fa-solid fa-desktop"></i></button>
+      <button class="dock-btn" id="btnMic" title="Mikrofon"><i class="fa-solid fa-microphone-slash"></i></button>
+      <button class="dock-btn" id="btnCam" title="Kamera"><i class="fa-solid fa-video-slash"></i></button>
+      <button class="dock-btn" id="btnShareScreen" title="Ekran Paylaşımı"><i class="fa-solid fa-desktop"></i></button>
       <button class="dock-btn danger" id="btnDisconnect" title="Odadan Ayrıl"><i class="fa-solid fa-phone-slash"></i></button>
     </div>
   </div>
 
-  <!-- Sağ Sohbet Paneli -->
+  <!-- ========================================== -->
+  <!-- BÖLÜM 4: SAĞ SOHBET PANELİ                 -->
+  <!-- ========================================== -->
   <div class="chat-sidebar" id="chatSidebar">
     <div class="chat-header">
       <div style="display: flex; align-items: baseline; gap: 8px;">
-        <span># sinema-sohbet</span>
+        <span># genel-sohbet</span>
         <span class="current-user-tag" id="currentUserTag"></span>
       </div>
-      <button class="close-chat-btn" id="btnCloseChat" title="Kapat">
+      <button class="close-chat-btn" id="btnCloseChat" title="Sohbeti Kapat">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
     <div class="chat-scroller" id="chatList"></div>
 
-    <!-- Yazıyor... Göstergesi -->
     <div class="typing-indicator" id="typingIndicator" style="display: none;">
       <span id="typingUser">Aleyna</span> yazıyor<span class="dots">...</span>
     </div>
 
     <div class="chat-bottom">
       <div class="chat-box">
-        <input type="text" id="chatInput" placeholder="#sinema-sohbet kanalına yaz..." autocomplete="off" />
+        <input type="text" id="chatInput" placeholder="#genel-sohbet kanalına yaz..." autocomplete="off" />
       </div>
     </div>
   </div>
 
+  <!-- Arka Planda Çalışan Sesler -->
   <div id="remoteAudiosContainer" style="display:none;"></div>
 
   <script src="app.js"></script>
