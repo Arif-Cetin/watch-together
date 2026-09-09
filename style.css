@@ -1,0 +1,609 @@
+/* style.css - Discord Temalı Modern Arayüz */
+:root {
+  --bg-darkest: #1e1f22;
+  --bg-secondary: #2b2d31;
+  --bg-primary: #313338;
+  --bg-floating: #232428;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+  --danger: #da373c;
+  --danger-hover: #a12828;
+  --success: #23a55a;
+  --text-normal: #dbdee1;
+  --text-muted: #949ba4;
+  --input-bg: #383a40;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg-darkest);
+  color: var(--text-normal);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Şifre ve Giriş Ekranı Modal */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.auth-card {
+  background-color: var(--bg-secondary);
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.house-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(88, 101, 242, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 26px;
+}
+
+.auth-card h2 {
+  font-size: 18px;
+  color: #fff;
+}
+
+.auth-card p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.auth-field {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.auth-field input, .auth-card input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--input-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.auth-card input:focus {
+  border-color: var(--accent);
+}
+
+.auth-card button {
+  width: 100%;
+  padding: 10px;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+  margin-top: 6px;
+}
+
+.auth-card button:hover {
+  background: var(--accent-hover);
+}
+
+.auth-error {
+  color: var(--danger);
+  font-size: 12px;
+  display: none;
+}
+
+/* Ana Sinema Sahnesi */
+.main-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #0b0e14;
+  position: relative;
+  min-width: 0;
+}
+
+.top-header {
+  height: 56px;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.room-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #fff;
+  font-size: 15px;
+}
+
+.mini-logo {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Dinamik Katılımcı Sayacı Rozeti */
+.status-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-normal);
+  background: var(--input-bg);
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.status-badge:hover {
+  background: #404249;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f0b232;
+}
+
+.status-indicator.connected {
+  background-color: var(--success);
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+/* Katılımcı Listesi Dropdown */
+.user-list-dropdown {
+  position: absolute;
+  top: 115%;
+  right: 0;
+  width: 220px;
+  background: var(--bg-floating);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 8px;
+  display: none;
+  z-index: 100;
+}
+
+.status-badge.open .user-list-dropdown {
+  display: block;
+}
+
+.dropdown-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 4px 8px 8px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 4px;
+}
+
+.dropdown-users {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.dropdown-user-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #fff;
+}
+
+.dropdown-user-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.dropdown-user-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+/* Sohbet Aç/Kapat Butonu */
+.chat-toggle-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.chat-toggle-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* Video Alanı */
+.screen-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #1a1b1e 0%, #0a0b0d 100%);
+  overflow: hidden;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.screen-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 24px;
+}
+
+.placeholder-glow {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(88, 101, 242, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 32px;
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.unmute-banner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  display: none;
+  z-index: 30;
+  backdrop-filter: blur(4px);
+}
+
+/* Çoklu Kamera Izgarası (Discord Grid) */
+.camera-grid {
+  position: absolute;
+  bottom: 90px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 450px;
+  z-index: 25;
+  pointer-events: none;
+}
+
+.cam-box {
+  position: relative;
+  width: 150px;
+  height: 100px;
+  background: #111;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  pointer-events: auto;
+}
+
+.cam-box video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cam-user-tag {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Alt Kontrol Dock */
+.call-dock {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(30, 31, 34, 0.88);
+  backdrop-filter: blur(12px);
+  padding: 10px 18px;
+  border-radius: 30px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+  z-index: 30;
+}
+
+.dock-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.dock-btn:hover {
+  background: #404249;
+  transform: translateY(-2px);
+}
+
+.dock-btn.active {
+  background: #fff;
+  color: #000;
+}
+
+.dock-btn.danger {
+  background: var(--danger);
+}
+
+.dock-btn.danger:hover {
+  background: var(--danger-hover);
+}
+
+/* Sağ Altta Yüzen Sohbet Penceresi */
+.chat-popup {
+  position: fixed;
+  bottom: 24px;
+  right: -360px;
+  width: 330px;
+  height: 460px;
+  background-color: var(--bg-primary);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: right 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+  z-index: 100;
+}
+
+.chat-popup.open {
+  right: 24px;
+}
+
+.chat-popup-header {
+  height: 50px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.popup-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #fff;
+}
+
+.popup-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.current-user-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.close-chat-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.close-chat-btn:hover {
+  color: #fff;
+}
+
+.chat-scroller {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.discord-msg {
+  display: flex;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.msg-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.msg-avatar.sys {
+  background: var(--success);
+}
+
+.msg-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.msg-author-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.msg-author {
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+}
+
+.msg-time {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.msg-text {
+  color: var(--text-normal);
+  word-break: break-word;
+  user-select: text;
+}
+
+.chat-bottom {
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.chat-box {
+  background: var(--input-bg);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+}
+
+.chat-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 13.5px;
+}
