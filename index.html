@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Watch Together - Çok Kullanıcılı Sinema</title>
+  
+  <!-- PeerJS WebRTC & İkonlar -->
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Dosyası -->
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- Giriş / Şifre Ekranı -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card">
+      <div class="house-icon-wrapper">
+        <i class="fa-solid fa-house main-icon"></i>
+      </div>
+      <h2>Watch Together'a Hoş Geldiniz</h2>
+      <p>Kullanıcı adını gir ve şifreyi doğrula.</p>
+      
+      <div class="auth-field">
+        <label>Kullanıcı Adın</label>
+        <input type="text" id="usernameInput" placeholder="Örn: Aleyna, Kaptan..." maxlength="20" />
+      </div>
+
+      <div class="auth-field">
+        <label>Oda Şifresi</label>
+        <input type="password" id="pinInput" placeholder="Güvenli şifreyi gir..." />
+      </div>
+
+      <span class="auth-error" id="authError">Girdiğin şifre hatalı!</span>
+      <button id="btnUnlock">Odaya Katıl</button>
+    </div>
+  </div>
+
+  <!-- Ana Sinema Sahnesi -->
+  <div class="main-stage">
+    <div class="top-header">
+      <div class="room-title">
+        <div class="mini-logo">
+          <i class="fa-solid fa-house"></i>
+        </div>
+        <span>Watch Together</span>
+      </div>
+
+      <div class="header-right">
+        <!-- Tıklanabilir Dinamik Kişi Sayacı Rozeti -->
+        <div class="status-badge" id="statusBadge" title="Odadakileri görmek için tıklayın">
+          <div class="status-indicator" id="statusDot"></div>
+          <span id="statusText">Oda: 1</span>
+          <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+
+          <!-- Açılır Katılımcı Listesi -->
+          <div class="user-list-dropdown" id="userListDropdown">
+            <div class="dropdown-header">Odadakiler (<span id="userCountSpan">1</span>)</div>
+            <div class="dropdown-users" id="dropdownUsersList"></div>
+          </div>
+        </div>
+
+        <button class="chat-toggle-btn" id="btnToggleChat" title="Sohbeti Aç/Kapat">
+          <i class="fa-solid fa-comments"></i>
+          <span>Sohbet</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="screen-area">
+      <button class="unmute-banner" id="btnUnmute">
+        <i class="fa-solid fa-volume-xmark"></i> Sesi Açmak İçin Dokunun
+      </button>
+
+      <!-- Ortalanmış Placeholder -->
+      <div class="screen-placeholder" id="placeholder">
+        <div class="placeholder-glow">
+          <i class="fa-solid fa-house"></i>
+        </div>
+        <h3>Yayın Bekleniyor</h3>
+        <p>Bilgisayardan bağlanan kişi alttaki monitör butonundan ekranını paylaşabilir.</p>
+      </div>
+
+      <!-- Ekran Paylaşımı Videosu -->
+      <video id="sharedVideo" autoplay playsinline style="display: none;"></video>
+      <div id="remoteAudiosContainer"></div>
+
+      <!-- Çoklu Kamera Izgarası (Discord Grid) -->
+      <div class="camera-grid" id="cameraGrid"></div>
+    </div>
+
+    <!-- Alt Kontrol Butonları -->
+    <div class="call-dock">
+      <button class="dock-btn" id="btnMic" title="Mikrofon Aç/Kapat"><i class="fa-solid fa-microphone-slash"></i></button>
+      <button class="dock-btn" id="btnCam" title="Kamera Aç/Kapat"><i class="fa-solid fa-video-slash"></i></button>
+      <button class="dock-btn" id="btnShareScreen" title="Ekran Paylaşımı Aç/Kapat"><i class="fa-solid fa-desktop"></i></button>
+      <button class="dock-btn danger" id="btnDisconnect" title="Oturumu Kapat"><i class="fa-solid fa-phone-slash"></i></button>
+    </div>
+  </div>
+
+  <!-- Sağ Altta Yüzen Sohbet -->
+  <div class="chat-popup" id="chatSidebar">
+    <div class="chat-popup-header">
+      <div class="popup-title">
+        <i class="fa-solid fa-hashtag"></i>
+        <span>genel-sohbet</span>
+      </div>
+      <div class="popup-actions">
+        <span class="current-user-tag" id="currentUserTag"></span>
+        <button class="close-chat-btn" id="btnCloseChat" title="Kapat">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-scroller" id="chatList"></div>
+
+    <div class="chat-bottom">
+      <div class="chat-box">
+        <input type="text" id="chatInput" placeholder="Mesaj gönder..." />
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Dosyası -->
+  <script src="./app.js"></script>
+  <script>
+    document.getElementById('btnCloseChat').addEventListener('click', () => {
+      document.getElementById('chatSidebar').classList.remove('open');
+    });
+  </script>
+</body>
+</html>
