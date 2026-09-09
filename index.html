@@ -2,18 +2,17 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Watch Together - Çok Kullanıcılı Sinema</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Watch Together - VIP Cinema</title>
   
-  <!-- PeerJS WebRTC & İkonlar -->
+  <!-- PeerJS & İkonlar -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- CSS Dosyası -->
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -23,17 +22,17 @@
       <div class="house-icon-wrapper">
         <i class="fa-solid fa-house main-icon"></i>
       </div>
-      <h2>Watch Together'a Hoş Geldiniz</h2>
-      <p>Kullanıcı adını gir ve şifreyi doğrula.</p>
+      <h2>Bizim Odamız</h2>
+      <p>Aleyna & Kaptan için özel şifrelenmiş VIP sinema odası.</p>
       
       <div class="auth-field">
         <label>Kullanıcı Adın</label>
-        <input type="text" id="usernameInput" placeholder="Örn: Aleyna, Kaptan..." maxlength="20" />
+        <input type="text" id="usernameInput" placeholder="Örn: Aleyna, Kaptan..." maxlength="18" autocomplete="off" />
       </div>
 
       <div class="auth-field">
         <label>Oda Şifresi</label>
-        <input type="password" id="pinInput" placeholder="Güvenli şifreyi gir..." />
+        <input type="password" id="pinInput" placeholder="Güvenlik anahtarını gir..." autocomplete="off" />
       </div>
 
       <span class="auth-error" id="authError">Girdiğin şifre hatalı!</span>
@@ -43,96 +42,127 @@
 
   <!-- Ana Sinema Sahnesi -->
   <div class="main-stage">
+    
+    <!-- Üst Başlık & Kontrol Çubuğu -->
     <div class="top-header">
       <div class="room-title">
         <div class="mini-logo">
-          <i class="fa-solid fa-house"></i>
+          <i class="fa-solid fa-sparkles"></i>
         </div>
-        <span>Watch Together</span>
+        <span>Watch Together <span class="room-vip-badge">VIP</span></span>
       </div>
 
       <div class="header-right">
-        <!-- Tıklanabilir Dinamik Kişi Sayacı Rozeti -->
-        <div class="status-badge" id="statusBadge" title="Odadakileri görmek için tıklayın">
+        <!-- Katılımcı Rozeti & Kullanıcı Başına Ses Slider'ı -->
+        <div class="status-badge" id="statusBadge" title="Katılımcılar ve Ses Seviyeleri">
           <div class="status-indicator" id="statusDot"></div>
           <span id="statusText">Oda: 1</span>
-          <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          <i class="fa-solid fa-chevron-down status-chevron"></i>
 
-          <!-- Açılır Katılımcı Listesi -->
-          <div class="user-list-dropdown" id="userListDropdown">
-            <div class="dropdown-header">Odadakiler (<span id="userCountSpan">1</span>)</div>
+          <div class="user-list-dropdown" id="userDropdown">
+            <div class="dropdown-header">
+              <span>KATILIMCILAR (<span id="userCountSpan">1</span>)</span>
+            </div>
             <div class="dropdown-users" id="dropdownUsersList"></div>
           </div>
         </div>
 
-        <button class="chat-toggle-btn" id="btnToggleChat" title="Sohbeti Aç/Kapat">
+        <!-- Hızlı Tepkiler / Emoji Menüsü -->
+        <div class="reaction-wrapper">
+          <button class="header-icon-btn" id="btnReactionTrigger" title="Tepki Gönder">
+            <i class="fa-solid fa-heart" style="color: var(--neon-purple-bright);"></i>
+          </button>
+          <div class="reaction-menu" id="reactionMenu">
+            <span class="react-btn" data-emoji="❤️">❤️</span>
+            <span class="react-btn" data-emoji="🍿">🍿</span>
+            <span class="react-btn" data-emoji="😂">😂</span>
+            <span class="react-btn" data-emoji="🔥">🔥</span>
+            <span class="react-btn" data-emoji="✨">✨</span>
+          </div>
+        </div>
+
+        <!-- Sohbet Butonu -->
+        <button class="header-icon-btn mobile-toggle" id="btnToggleChat" title="Sohbeti Aç/Kapat">
           <i class="fa-solid fa-comments"></i>
-          <span>Sohbet</span>
         </button>
       </div>
     </div>
 
-    <div class="screen-area">
+    <!-- Yayın Sahnesi -->
+    <div class="screen-area" id="screenArea">
+      
+      <!-- Ekran Yayını Ses Ayarı (%0 - %200 Boost) -->
+      <div class="screen-volume-bar" id="screenVolumeControl" style="display: none;">
+        <i class="fa-solid fa-volume-high" style="color: var(--neon-green-bright); font-size: 13px;"></i>
+        <input type="range" id="screenVolSlider" min="0" max="2" step="0.05" value="1" />
+        <span class="screen-vol-val" id="screenVolText">%100</span>
+      </div>
+
+      <!-- Tarayıcı Sesi Otomatik Engellerse Açma Tuşu -->
       <button class="unmute-banner" id="btnUnmute">
         <i class="fa-solid fa-volume-xmark"></i> Sesi Açmak İçin Dokunun
       </button>
 
-      <!-- Ortalanmış Placeholder -->
+      <!-- Tam Ekran Butonu -->
+      <button class="fullscreen-btn" id="btnFullscreen" title="Tam Ekran" style="display: none;">
+        <i class="fa-solid fa-expand"></i>
+      </button>
+
+      <!-- Yüzen Neon Emojiler Katmanı -->
+      <div class="floating-reactions-layer" id="reactionsLayer"></div>
+
+      <!-- Bekleme Sahnesi -->
       <div class="screen-placeholder" id="placeholder">
         <div class="placeholder-glow">
-          <i class="fa-solid fa-house"></i>
+          <i class="fa-solid fa-house-chimney-heart"></i>
         </div>
-        <h3>Yayın Bekleniyor</h3>
-        <p>Bilgisayardan bağlanan kişi alttaki monitör butonundan ekranını paylaşabilir.</p>
+        <h3>Bizim Sinemamız</h3>
+        <p>Alttaki butonla ekranını paylaştığında sinema burada başlayacak.</p>
       </div>
 
-      <!-- Ekran Paylaşımı Videosu -->
       <video id="sharedVideo" autoplay playsinline style="display: none;"></video>
-      <div id="remoteAudiosContainer"></div>
 
-      <!-- Çoklu Kamera Izgarası (Discord Grid) -->
+      <!-- Kamera Izgarası -->
       <div class="camera-grid" id="cameraGrid"></div>
     </div>
 
-    <!-- Alt Kontrol Butonları -->
+    <!-- Alt Buton Dock'u -->
     <div class="call-dock">
       <button class="dock-btn" id="btnMic" title="Mikrofon Aç/Kapat"><i class="fa-solid fa-microphone-slash"></i></button>
       <button class="dock-btn" id="btnCam" title="Kamera Aç/Kapat"><i class="fa-solid fa-video-slash"></i></button>
-      <button class="dock-btn" id="btnShareScreen" title="Ekran Paylaşımı Aç/Kapat"><i class="fa-solid fa-desktop"></i></button>
-      <button class="dock-btn danger" id="btnDisconnect" title="Oturumu Kapat"><i class="fa-solid fa-phone-slash"></i></button>
+      <button class="dock-btn" id="btnShareScreen" title="Ekran Paylaşımı Başlat"><i class="fa-solid fa-desktop"></i></button>
+      <button class="dock-btn danger" id="btnDisconnect" title="Odadan Ayrıl"><i class="fa-solid fa-phone-slash"></i></button>
     </div>
   </div>
 
-  <!-- Sağ Altta Yüzen Sohbet -->
-  <div class="chat-popup" id="chatSidebar">
-    <div class="chat-popup-header">
-      <div class="popup-title">
-        <i class="fa-solid fa-hashtag"></i>
-        <span>genel-sohbet</span>
-      </div>
-      <div class="popup-actions">
+  <!-- Sağ Sohbet Paneli -->
+  <div class="chat-sidebar" id="chatSidebar">
+    <div class="chat-header">
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span># sinema-sohbet</span>
         <span class="current-user-tag" id="currentUserTag"></span>
-        <button class="close-chat-btn" id="btnCloseChat" title="Kapat">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
       </div>
+      <button class="close-chat-btn" id="btnCloseChat" title="Kapat">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
     <div class="chat-scroller" id="chatList"></div>
 
+    <!-- Yazıyor... Göstergesi -->
+    <div class="typing-indicator" id="typingIndicator" style="display: none;">
+      <span id="typingUser">Aleyna</span> yazıyor<span class="dots">...</span>
+    </div>
+
     <div class="chat-bottom">
       <div class="chat-box">
-        <input type="text" id="chatInput" placeholder="Mesaj gönder..." />
+        <input type="text" id="chatInput" placeholder="#sinema-sohbet kanalına yaz..." autocomplete="off" />
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Dosyası -->
-  <script src="./app.js"></script>
-  <script>
-    document.getElementById('btnCloseChat').addEventListener('click', () => {
-      document.getElementById('chatSidebar').classList.remove('open');
-    });
-  </script>
+  <div id="remoteAudiosContainer" style="display:none;"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
